@@ -111,5 +111,6 @@ venv.bak/
 dmypy.json
 
 # CUSTOM
-resources/data/*.xlsx
-resources/data/clubs/*.xlsx
+resources/data/gta_v/
+resources/data/concrete/
+
