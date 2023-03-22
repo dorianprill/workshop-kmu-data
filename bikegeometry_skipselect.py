@@ -92,47 +92,26 @@ for i, ul in enumerate(sublists):
             print('No table found')
             continue
 
-        # if table contains select elements, check the 
-        selects = []
+        # if table contains select elements, skip this one as it will export incorrectly
         try:
-            selects = table.find_all('select')
+            table.find_all('select').pop()
+            print('Found select elements -> skipping this table')
+            continue
         except:
             pass
-
-        opts = []
-        if selects is not None:
-            try:
-                opts.append(selects.find_all('option').pop().text.strip(' \t\n\r'))
-            except IndexError as e:
-                break
         
         #print(f'Rows (const):\t{len(rows)}')
         print(f'Variants:\t{len(rows[0].find_all("td"))}\n')
         # extract values from table
         for row in rows:
 
-            row_header = row.find('th').text.strip(' \t\n\r')
-
+            selectopt = None
+            
             for idx, col in enumerate(row.find_all('td')):
-                # set the select option value for the variants
-                select_name = ''
-                if row_header != 'Rahmengröße/Setup' and  row_header != '' and len(selects) > 0:
-                    pass # TODO
-                # TODO using only the default selected option for now, otherwise the export will mangle both with additional newlines in a single cell
-                # try:
-                #     #colval = col.find('select').find_all('option').pop().text.strip(' \t\n\r')
-                #     selectopt = col.find('select').find_all('option').pop()
-                #     spanval = col.find('span', attrs={'data-frame-config':selectopt.get('value')})
-                #     # if spanval != None:
-                #     #     colval = spanval.text.strip(' \t\n\r')
-                #     # elif selectopt != None:
-                #     #     colval = col.text.split('\n')[0] + selectopt.text.strip(' \t\n\r')
-                #     if selectopt != None or spanval != None:
-                #         continue
-                # except:
+
                 colval = col.text.strip(' \t\n\r')
                 # match value to the current row header
-                match row_header:
+                match row.find('th').text.strip(' \t\n\r'):
                     case 'Modell':
                         data['Model'].append(colval)
                     case 'Rahmengröße/Setup':
@@ -198,6 +177,6 @@ for i, ul in enumerate(sublists):
 # construct data frame from dict
 df = pl.DataFrame(data)
 print(df.head(), df.shape)
-df.write_csv('resources/data/bicycles/geometrics.mtb-news.csv', sep=';')
-df.write_ipc('resources/data/bicycles/geometrics.mtb-news.arrow', compression='zstd')
+df.write_csv('resources/data/bicycles/geometrics.mtb-news.skip.csv', sep=';')
+df.write_ipc('resources/data/bicycles/geometrics.mtb-news.skip.arrow', compression='zstd')
 
