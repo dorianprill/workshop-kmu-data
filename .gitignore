@@ -113,5 +113,4 @@ dmypy.json
 # CUSTOM
 resources/data/gta_v/
 resources/data/concrete/
-resources/data/bicycles/*.csv
 
